@@ -6,37 +6,37 @@ import MainLayout from '@/components/layout/MainLayout';
 import ChatContactsList, { Contact } from '@/components/chat/ChatContactsList';
 import ChatInterface from '@/components/chat/ChatInterface';
 
-// Mock data for demonstration
+// Mock data with Muslim Pakistani names
 const mockContacts: Contact[] = [
   {
     id: 'teacher1',
-    name: 'Dr. Sarah Johnson',
+    name: 'Dr. Fatima Khan',
     role: 'teacher',
     lastMessage: 'I can help with your physics question',
     unread: 2,
   },
   {
     id: 'teacher2',
-    name: 'Prof. Michael Chen',
+    name: 'Prof. Ahmad Malik',
     role: 'teacher',
     lastMessage: 'Let me know if you need more examples',
   },
   {
     id: 'technician1',
-    name: 'Alex Rodriguez',
+    name: 'Usman Ali',
     role: 'technician',
     lastMessage: 'Have you tried resetting the device?',
     unread: 1,
   },
   {
     id: 'technician2',
-    name: 'Olivia Williams',
+    name: 'Zainab Hussain',
     role: 'technician',
     lastMessage: 'I think we can fix that remotely',
   },
   {
     id: 'student1',
-    name: 'Emma Thompson',
+    name: 'Imran Ahmed',
     role: 'student',
     lastMessage: 'Thanks for your help!',
   },

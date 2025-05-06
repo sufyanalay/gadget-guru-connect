@@ -45,15 +45,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Mock different users based on email prefix
       let role: UserRole = 'student';
+      let name = email.split('@')[0];
+      
       if (email.startsWith('teacher')) {
         role = 'teacher';
+        name = 'Ahmad Malik';
       } else if (email.startsWith('tech')) {
         role = 'technician';
+        name = 'Usman Ali';
+      } else {
+        name = 'Imran Ahmed';
       }
       
       const mockUser: User = {
         id: `user-${Date.now()}`,
-        name: email.split('@')[0],
+        name,
         email,
         role,
       };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { MessageCircle, Star, Clock } from 'lucide-react';
 import { Expert } from '@/types/expert';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/components/ui/use-toast';
 
 interface ExpertCardProps {
   expert: Expert;
@@ -15,10 +16,19 @@ interface ExpertCardProps {
 
 const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   
   const handleStartChat = () => {
-    // In a real implementation, this would create a chat session and navigate to it
-    navigate(`/chat?expertId=${expert.id}`);
+    if (isAuthenticated) {
+      // In a real implementation, this would create a chat session and navigate to it
+      navigate(`/chat?expertId=${expert.id}`);
+    } else {
+      toast({
+        title: "Authentication Required",
+        description: "Please login to start a chat with this expert",
+      });
+      navigate('/login');
+    }
   };
   
   const getRoleColor = (role: string) => {

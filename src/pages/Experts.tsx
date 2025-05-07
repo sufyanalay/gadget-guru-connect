@@ -196,9 +196,9 @@ const Experts = () => {
   return (
     <MainLayout>
       <div className="container max-w-6xl mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-2">Experts</h1>
+        <h1 className="text-3xl font-bold mb-2">Find Your Perfect Expert</h1>
         <p className="text-muted-foreground mb-8">
-          Connect with our qualified teachers and technicians to get the help you need.
+          Connect with our qualified teachers and technicians to get help with assignments, repairs, or academic questions.
         </p>
         
         <ExpertsList experts={experts} isLoading={isLoading} />

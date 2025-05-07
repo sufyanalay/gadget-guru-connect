@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { MessageCircle, Star, Clock } from 'lucide-react';
+import { MessageCircle, Star, Clock, MapPin, Globe, GraduationCap, Check, Languages, Calendar } from 'lucide-react';
 import { Expert } from '@/types/expert';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,6 +32,11 @@ const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
     }
   };
   
+  const handleViewProfile = () => {
+    // In a real implementation, this would navigate to the expert's profile
+    navigate(`/experts/${expert.id}`);
+  };
+  
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'teacher':
@@ -54,9 +60,9 @@ const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-primary/20">
       <CardContent className="p-0">
-        <div className="bg-accent/20 p-4 relative">
+        <div className={`${expert.role === 'teacher' ? 'bg-blue-50/50' : 'bg-green-50/50'} p-4 relative`}>
           <div className="absolute top-2 right-2">
             <Badge variant="secondary" className={`${getRoleColor(expert.role)}`}>
               {getRoleLabel(expert.role)}
@@ -64,12 +70,12 @@ const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
           </div>
           <div className="flex flex-col items-center">
             <div className="relative mb-2">
-              <Avatar className="h-24 w-24 border-4 border-background">
-                <AvatarImage src={expert.avatar} />
-                <AvatarFallback className="text-lg">{expert.name.charAt(0)}</AvatarFallback>
+              <Avatar className="h-24 w-24 border-4 border-background shadow-md">
+                <AvatarImage src={expert.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(expert.name)}&background=random`} />
+                <AvatarFallback className="text-lg bg-primary/10">{expert.name.charAt(0)}</AvatarFallback>
               </Avatar>
               {expert.isOnline && (
-                <span className="absolute bottom-1 right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-background"></span>
+                <span className="absolute bottom-1 right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-background animate-pulse"></span>
               )}
             </div>
             <h3 className="text-lg font-semibold">{expert.name}</h3>
@@ -84,11 +90,11 @@ const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
         </div>
         
         <div className="p-4">
-          <p className="text-sm text-muted-foreground line-clamp-2 h-10 mb-2">{expert.bio}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2 h-10 mb-3">{expert.bio}</p>
           
-          <div className="flex flex-wrap gap-1 mb-3">
+          <div className="flex flex-wrap gap-1 mb-4">
             {expert.specializations.slice(0, 3).map((spec) => (
-              <Badge key={spec.id} variant="outline" className="bg-accent/10">
+              <Badge key={spec.id} variant="outline" className="bg-accent/10 hover:bg-accent/20">
                 {spec.name}
               </Badge>
             ))}
@@ -96,7 +102,7 @@ const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Badge variant="outline" className="bg-accent/10">
+                    <Badge variant="outline" className="bg-accent/10 hover:bg-accent/20">
                       +{expert.specializations.length - 3} more
                     </Badge>
                   </TooltipTrigger>
@@ -117,18 +123,70 @@ const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
               <Clock className="h-3 w-3" />
               <span>{expert.experience} years exp.</span>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="font-semibold text-foreground">${expert.hourlyRate}/hr</span>
+            <div className="flex items-center gap-1 text-foreground">
+              <span className="font-semibold">${expert.hourlyRate}/hr</span>
             </div>
+            {expert.location && (
+              <div className="flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                <span>{expert.location}</span>
+              </div>
+            )}
+            {expert.education && (
+              <div className="flex items-center gap-1">
+                <GraduationCap className="h-3 w-3" />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="truncate cursor-help">{expert.education}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">{expert.education}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            )}
+            {expert.languages && expert.languages.length > 0 && (
+              <div className="flex items-center gap-1">
+                <Globe className="h-3 w-3" />
+                <span>{expert.languages.join(', ')}</span>
+              </div>
+            )}
+            {expert.availability && (
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="truncate cursor-help">{expert.availability}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">{expert.availability}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            )}
           </div>
           
-          <Button 
-            onClick={handleStartChat}
-            className="w-full flex items-center gap-2"
-          >
-            <MessageCircle className="h-4 w-4" />
-            Start Chat
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              onClick={handleStartChat}
+              className="flex items-center gap-2"
+              variant="default"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Chat Now
+            </Button>
+            <Button
+              onClick={handleViewProfile}
+              className="flex items-center gap-2"
+              variant="outline"
+            >
+              View Profile
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

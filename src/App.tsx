@@ -14,6 +14,7 @@ import AcademicHelp from "./pages/AcademicHelp";
 import AssignmentWriting from "./pages/AssignmentWriting";
 import Chat from "./pages/Chat";
 import Experts from "./pages/Experts";
+import ExpertProfile from "./pages/ExpertProfile";
 import Profile from "./pages/Profile";
 import Earnings from "./pages/Earnings";
 import NotFound from "./pages/NotFound";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/assignment-writing" element={<AssignmentWriting />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/experts" element={<Experts />} />
+            <Route path="/experts/:id" element={<ExpertProfile />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/earnings" element={<Earnings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

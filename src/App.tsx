@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import GadgetRepair from "./pages/GadgetRepair";
 import AcademicHelp from "./pages/AcademicHelp";
 import Chat from "./pages/Chat";
+import Experts from "./pages/Experts";
 import Profile from "./pages/Profile";
 import Earnings from "./pages/Earnings";
 import NotFound from "./pages/NotFound";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/gadget-repair" element={<GadgetRepair />} />
             <Route path="/academic-help" element={<AcademicHelp />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/experts" element={<Experts />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/earnings" element={<Earnings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

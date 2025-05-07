@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,7 +5,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Laptop, BookOpen, MessageCircle, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Laptop, BookOpen, MessageCircle, Clock, CheckCircle, AlertCircle, UserSearch } from 'lucide-react';
 
 // Mock data for demonstration
 const pendingRequests = [
@@ -56,7 +55,7 @@ const Dashboard = () => {
         </p>
 
         {/* Quick Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Button 
             onClick={() => navigate('/gadget-repair')}
             className="flex items-center gap-2 h-auto py-6"
@@ -79,6 +78,14 @@ const Dashboard = () => {
           >
             <MessageCircle className="h-5 w-5" />
             <span>Open Chat</span>
+          </Button>
+          <Button 
+            onClick={() => navigate('/experts')}
+            className="flex items-center gap-2 h-auto py-6"
+            variant="default"
+          >
+            <UserSearch className="h-5 w-5" />
+            <span>Find Experts</span>
           </Button>
         </div>
 

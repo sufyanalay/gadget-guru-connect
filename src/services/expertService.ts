@@ -47,7 +47,7 @@ export const expertService = {
   
   // Rate an expert
   rateExpert: async (expertId: string, rating: number, comment?: string): Promise<void> => {
-    return fetchWithAuth(`/experts/${id}/rate/`, {
+    return fetchWithAuth(`/experts/${expertId}/rate/`, {
       method: 'POST',
       body: JSON.stringify({ rating, comment }),
     });

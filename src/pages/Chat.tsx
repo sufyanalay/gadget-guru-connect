@@ -1,10 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import MainLayout from '@/components/layout/MainLayout';
 import ChatContactsList, { Contact } from '@/components/chat/ChatContactsList';
 import ChatInterface from '@/components/chat/ChatInterface';
+import { chatService } from '@/services/chatService';
+import { toast } from '@/components/ui/use-toast';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Mock data with Muslim Pakistani names
 const mockContacts: Contact[] = [
@@ -43,12 +46,70 @@ const mockContacts: Contact[] = [
 ];
 
 const Chat = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [contacts, setContacts] = useState<Contact[]>(mockContacts);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // In a real implementation, this would fetch contacts from the API
+  useEffect(() => {
+    const fetchContacts = async () => {
+      // This would be an API call in a real implementation
+      // For now, we'll use the mock data but simulate an API call
+      setIsLoading(true);
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // In a real app, we would fetch contacts from the API:
+        // const data = await chatService.getUserChats();
+        // const formattedContacts = data.map(chat => ({...}));
+        // setContacts(formattedContacts);
+        
+        // For now, we'll just use the mock data
+        setContacts(mockContacts);
+      } catch (error) {
+        console.error('Error fetching contacts:', error);
+        toast({
+          title: 'Error',
+          description: 'Could not load contacts. Please try again later.',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchContacts();
+    }
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
+
+  const handleSelectContact = async (contact: Contact) => {
+    setSelectedContact(contact);
+    
+    // Mark messages as read when selecting a contact
+    // In a real implementation, this would call the API
+    if (contact.unread && contact.unread > 0) {
+      try {
+        // Simulate API call
+        // await chatService.markMessagesAsRead(contact.id, []);
+        
+        // Update UI to remove unread count
+        setContacts(prevContacts => 
+          prevContacts.map(c => 
+            c.id === contact.id ? { ...c, unread: 0 } : c
+          )
+        );
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    }
+  };
 
   return (
     <MainLayout>
@@ -61,9 +122,10 @@ const Chat = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
             <ChatContactsList 
-              contacts={mockContacts}
-              onSelectContact={setSelectedContact}
+              contacts={contacts}
+              onSelectContact={handleSelectContact}
               selectedContactId={selectedContact?.id}
+              isLoading={isLoading}
             />
           </div>
           <div className="lg:col-span-2">

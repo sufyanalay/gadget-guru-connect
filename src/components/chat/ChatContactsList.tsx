@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { UserRole } from '@/contexts/AuthContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export interface Contact {
   id: string;
@@ -15,18 +16,22 @@ export interface Contact {
   lastMessage?: string;
   avatar?: string;
   unread?: number;
+  lastActive?: Date;
+  isOnline?: boolean;
 }
 
 interface ChatContactsListProps {
   contacts: Contact[];
   onSelectContact: (contact: Contact) => void;
   selectedContactId?: string;
+  isLoading?: boolean;
 }
 
 const ChatContactsList: React.FC<ChatContactsListProps> = ({ 
   contacts,
   onSelectContact,
-  selectedContactId
+  selectedContactId,
+  isLoading = false,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState<UserRole | 'all'>('all');
@@ -41,6 +46,18 @@ const ChatContactsList: React.FC<ChatContactsListProps> = ({
     return matchesSearch && matchesRole;
   });
 
+  const renderContactSkeletons = () => {
+    return Array(5).fill(0).map((_, index) => (
+      <div key={index} className="flex items-center gap-3 p-3 rounded-md">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="flex-1">
+          <Skeleton className="h-4 w-32 mb-2" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+      </div>
+    ));
+  };
+
   return (
     <div className="h-full flex flex-col border rounded-md overflow-hidden">
       <div className="p-4 border-b">
@@ -52,12 +69,14 @@ const ChatContactsList: React.FC<ChatContactsListProps> = ({
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            disabled={isLoading}
           />
         </div>
         <RadioGroup
           className="flex gap-4"
           defaultValue="all"
           onValueChange={(value) => setFilterRole(value as UserRole | 'all')}
+          disabled={isLoading}
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="all" id="all" />
@@ -76,7 +95,9 @@ const ChatContactsList: React.FC<ChatContactsListProps> = ({
       
       <ScrollArea className="flex-1">
         <div className="p-2">
-          {filteredContacts.length === 0 ? (
+          {isLoading ? (
+            renderContactSkeletons()
+          ) : filteredContacts.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               No contacts found
             </div>
@@ -91,10 +112,15 @@ const ChatContactsList: React.FC<ChatContactsListProps> = ({
                 }`}
                 onClick={() => onSelectContact(contact)}
               >
-                <Avatar>
-                  <AvatarImage src={contact.avatar} />
-                  <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar>
+                    <AvatarImage src={contact.avatar} />
+                    <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  {contact.isOnline && (
+                    <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-background"></span>
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium text-sm truncate">{contact.name}</h3>

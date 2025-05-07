@@ -4,20 +4,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Paperclip, Send, Image, FileText, X } from 'lucide-react';
+import { Paperclip, Send, Image, FileText, X, Check, CheckCheck } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
-
-type MessageType = {
-  id: string;
-  text: string;
-  sender: string;
-  timestamp: Date;
-  attachment?: {
-    type: 'image' | 'file';
-    url: string;
-    name: string;
-  };
-};
+import { Message, MessageStatus, Attachment } from '@/types/chat';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import MessageBubble from '@/components/chat/MessageBubble';
+import TypingIndicator from '@/components/chat/TypingIndicator';
 
 interface ChatInterfaceProps {
   recipientId: string;
@@ -33,97 +25,198 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   recipientAvatar,
 }) => {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<MessageType[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [attachment, setAttachment] = useState<File | null>(null);
   const [attachmentPreview, setAttachmentPreview] = useState<string>('');
+  const [isRecipientTyping, setIsRecipientTyping] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Mock initial messages
+  // Mock initial messages - in real implementation, fetch messages from API
   useEffect(() => {
-    const initialMessages: MessageType[] = [
-      {
-        id: '1',
-        text: `Hello! I'm ${recipientName}. How can I help you today?`,
-        sender: recipientId,
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-      },
-    ];
-    setMessages(initialMessages);
-  }, [recipientId, recipientName]);
+    // In real implementation, this would be an API call
+    const fetchMessages = async () => {
+      try {
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const initialMessages: Message[] = [
+          {
+            id: '1',
+            text: `Assalam Alaikum! I'm ${recipientName}. How can I help you today?`,
+            sender: recipientId,
+            recipient: user?.id || '',
+            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+            status: 'read'
+          },
+        ];
+        
+        setMessages(initialMessages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+        toast({
+          title: 'Error',
+          description: 'Could not load messages. Please try again later.',
+          variant: 'destructive',
+        });
+      }
+    };
+
+    if (user && recipientId) {
+      fetchMessages();
+    }
+  }, [recipientId, recipientName, user]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  // Simulate typing indicator from the recipient
+  useEffect(() => {
+    const typingTimeout = setTimeout(() => {
+      setIsRecipientTyping(false);
+    }, 5000);
+
+    return () => clearTimeout(typingTimeout);
+  }, [isRecipientTyping]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if ((!newMessage.trim() && !attachment) || !user) return;
 
-    const newMsg: MessageType = {
+    setIsSending(true);
+
+    // Create attachment if file is selected
+    let messageAttachment: Attachment | undefined;
+    if (attachment) {
+      messageAttachment = {
+        id: `attachment-${Date.now()}`,
+        type: attachment.type.startsWith('image/') ? 'image' : 'file',
+        url: attachmentPreview,
+        name: attachment.name,
+        size: attachment.size,
+        contentType: attachment.type,
+      };
+    }
+
+    // Create new message object
+    const newMsg: Message = {
       id: `msg-${Date.now()}`,
       text: newMessage.trim(),
       sender: user.id,
+      recipient: recipientId,
       timestamp: new Date(),
-      ...(attachment && attachmentPreview
-        ? {
-            attachment: {
-              type: attachment.type.startsWith('image/') ? 'image' : 'file',
-              url: attachmentPreview,
-              name: attachment.name,
-            },
-          }
-        : {}),
+      status: 'sending',
+      ...(messageAttachment ? { attachments: [messageAttachment] } : {}),
     };
 
-    setMessages([...messages, newMsg]);
+    // Add message to UI immediately
+    setMessages(prev => [...prev, newMsg]);
     setNewMessage('');
     clearAttachment();
 
-    // Simulate reply after a short delay
-    setTimeout(() => {
-      const replyMessage: MessageType = {
-        id: `msg-${Date.now() + 1}`,
-        text: getAutoReply(recipientRole),
-        sender: recipientId,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, replyMessage]);
-    }, 2000);
+    try {
+      // Simulate API call to send message
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Update message status to 'sent' after successful API call
+      setMessages(prevMessages =>
+        prevMessages.map(msg => 
+          msg.id === newMsg.id ? { ...msg, status: 'sent' as MessageStatus } : msg
+        )
+      );
+
+      // After a short delay, update to 'delivered'
+      setTimeout(() => {
+        setMessages(prevMessages =>
+          prevMessages.map(msg => 
+            msg.id === newMsg.id ? { ...msg, status: 'delivered' as MessageStatus } : msg
+          )
+        );
+      }, 1000);
+
+      // Show typing indicator
+      setTimeout(() => {
+        setIsRecipientTyping(true);
+      }, 1500);
+
+      // Simulate a reply after typing
+      setTimeout(() => {
+        const replyMessage: Message = {
+          id: `msg-${Date.now() + 1}`,
+          text: getAutoReply(recipientRole),
+          sender: recipientId,
+          recipient: user.id,
+          timestamp: new Date(),
+          status: 'delivered'
+        };
+        
+        setIsRecipientTyping(false);
+        setMessages(prev => [...prev, replyMessage]);
+        
+        // Update the reply to 'read' status after a short delay
+        setTimeout(() => {
+          setMessages(prevMessages =>
+            prevMessages.map(msg => 
+              msg.id === replyMessage.id ? { ...msg, status: 'read' as MessageStatus } : msg
+            )
+          );
+        }, 1000);
+      }, 3500);
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Update message status to 'failed'
+      setMessages(prevMessages =>
+        prevMessages.map(msg => 
+          msg.id === newMsg.id ? { ...msg, status: 'failed' as MessageStatus } : msg
+        )
+      );
+      
+      toast({
+        title: 'Message failed',
+        description: 'Could not send your message. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const getAutoReply = (role: string): string => {
     const replies: Record<string, string[]> = {
       teacher: [
         "That's a great question! Let me explain...",
-        "I understand your problem. Here's how you can approach it...",
-        "I've seen this issue before. Try working through it step by step.",
-        "Let me help you understand this concept better.",
+        "Subhan Allah, I understand your problem. Here's how you can approach it...",
+        "Mashallah, I've seen this issue before. Try working through it step by step.",
+        "Jazak Allah Khair for your question. Let me help you understand this concept better.",
       ],
       technician: [
-        "I can help you fix that. First, let's diagnose the issue.",
-        "That sounds like a common problem with that device. Here's what you should try...",
-        "I've worked on similar issues. Have you tried restarting the device?",
-        "Let me walk you through the troubleshooting steps.",
+        "I can help you fix that. First, let's diagnose the issue Insha'Allah.",
+        "That's a common problem with that device. Bismillah, here's what you should try...",
+        "Alhamdulillah, I've worked on similar issues. Have you tried restarting the device?",
+        "Let me walk you through the troubleshooting steps in detail.",
       ],
       student: [
-        "I've faced that problem too. Maybe we can work on it together?",
-        "I'm not sure I know the answer, but I'm happy to discuss it.",
-        "That's interesting! Let's talk more about it.",
-        "I've studied that topic recently. Let me share what I learned.",
+        "I've faced that problem too. Maybe we can work on it together In Sha Allah?",
+        "I'm not sure I know the answer, but Bismillah, I'm happy to discuss it.",
+        "That's interesting! SubhanAllah, let's talk more about it.",
+        "Masha Allah, I've studied that topic recently. Let me share what I learned.",
       ],
     };
 
     const defaultReplies = [
-      "Thanks for your message. I'll get back to you soon.",
-      "I appreciate your question. Let me think about that.",
-      "That's interesting. Can you tell me more?",
-      "I'll help you with that as best I can.",
+      "Jazak Allah Khair for your message. I'll get back to you soon.",
+      "Alhamdulillah, I appreciate your question. Let me think about that.",
+      "SubhanAllah, that's interesting. Can you tell me more?",
+      "In Sha Allah, I'll help you with that as best I can.",
     ];
 
     const roleReplies = replies[role.toLowerCase()] || defaultReplies;
@@ -188,50 +281,33 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <p className="text-xs text-muted-foreground capitalize">{recipientRole}</p>
           </div>
         </div>
+        <div className="text-xs text-muted-foreground">
+          {isRecipientTyping ? 'typing...' : 'online'}
+        </div>
       </div>
 
       {/* Chat messages area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => {
-          const isCurrentUser = message.sender === user?.id;
-          return (
-            <div
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-4">
+          {messages.map((message) => (
+            <MessageBubble
               key={message.id}
-              className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-lg p-3 ${
-                  isCurrentUser
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
-                }`}
-              >
-                {message.attachment && (
-                  <div className="mb-2">
-                    {message.attachment.type === 'image' ? (
-                      <img
-                        src={message.attachment.url}
-                        alt="Attachment"
-                        className="max-h-60 rounded-md object-contain mb-2"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 p-2 bg-background/50 rounded-md">
-                        <FileText size={16} />
-                        <span className="text-sm truncate">{message.attachment.name}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                {message.text && <p className="text-sm">{message.text}</p>}
-                <div className={`text-xs mt-1 ${isCurrentUser ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                  {formatTime(message.timestamp)}
-                </div>
+              message={message}
+              isCurrentUser={message.sender === user?.id}
+              recipientName={recipientName}
+              userName={user?.name || ''}
+            />
+          ))}
+          {isRecipientTyping && (
+            <div className="flex justify-start">
+              <div className="max-w-[80%] rounded-lg p-3 bg-muted">
+                <TypingIndicator />
               </div>
             </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </ScrollArea>
 
       {/* Attachment preview */}
       {attachment && (
@@ -263,6 +339,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             variant="outline"
             size="icon"
             onClick={handleAttachmentClick}
+            disabled={isSending}
           >
             <Paperclip size={18} />
           </Button>
@@ -272,11 +349,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             className="flex-1"
+            disabled={isSending}
           />
           <Button
             type="button"
             onClick={handleSendMessage}
-            disabled={!newMessage.trim() && !attachment}
+            disabled={(!newMessage.trim() && !attachment) || isSending}
           >
             <Send size={18} />
           </Button>

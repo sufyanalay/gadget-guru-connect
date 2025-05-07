@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import GadgetRepair from "./pages/GadgetRepair";
 import AcademicHelp from "./pages/AcademicHelp";
+import AssignmentWriting from "./pages/AssignmentWriting";
 import Chat from "./pages/Chat";
 import Experts from "./pages/Experts";
 import Profile from "./pages/Profile";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/gadget-repair" element={<GadgetRepair />} />
             <Route path="/academic-help" element={<AcademicHelp />} />
+            <Route path="/assignment-writing" element={<AssignmentWriting />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/experts" element={<Experts />} />
             <Route path="/profile" element={<Profile />} />

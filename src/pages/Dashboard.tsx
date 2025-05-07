@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -5,23 +6,26 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Laptop, BookOpen, MessageCircle, Clock, CheckCircle, AlertCircle, UserSearch } from 'lucide-react';
+import { Laptop, BookOpen, MessageCircle, Clock, CheckCircle, AlertCircle, UserSearch, FileText } from 'lucide-react';
 
 // Mock data for demonstration
 const pendingRequests = [
   { id: '1', type: 'repair', title: 'iPhone screen cracked', status: 'pending', date: '2025-05-05' },
   { id: '2', type: 'academic', title: 'Physics homework help', status: 'pending', date: '2025-05-04' },
+  { id: '3', type: 'assignment', title: 'Marketing Analysis Essay', status: 'pending', date: '2025-05-06' },
 ];
 
 const completedRequests = [
-  { id: '3', type: 'repair', title: 'Laptop won\'t boot', status: 'completed', date: '2025-05-01' },
-  { id: '4', type: 'academic', title: 'Math exam prep', status: 'completed', date: '2025-04-28' },
+  { id: '4', type: 'repair', title: 'Laptop won\'t boot', status: 'completed', date: '2025-05-01' },
+  { id: '5', type: 'academic', title: 'Math exam prep', status: 'completed', date: '2025-04-28' },
+  { id: '6', type: 'assignment', title: 'Research Paper on Climate Change', status: 'completed', date: '2025-04-30' },
 ];
 
 // For teachers/technicians
 const earningsData = [
   { id: '1', type: 'repair', title: 'Fixed MacBook battery issue', amount: 45, date: '2025-05-03' },
   { id: '2', type: 'academic', title: 'Calculus tutoring session', amount: 35, date: '2025-05-02' },
+  { id: '3', type: 'assignment', title: 'Wrote research paper on renewable energy', amount: 75, date: '2025-05-04' },
 ];
 
 const Dashboard = () => {
@@ -44,6 +48,18 @@ const Dashboard = () => {
     }
   };
 
+  const renderTypeIcon = (type: string) => {
+    if (type === 'repair') {
+      return <Laptop className="h-5 w-5 text-primary" />;
+    } else if (type === 'academic') {
+      return <BookOpen className="h-5 w-5 text-accent" />;
+    } else if (type === 'assignment') {
+      return <FileText className="h-5 w-5 text-indigo-500" />;
+    } else {
+      return <MessageCircle className="h-5 w-5 text-muted-foreground" />;
+    }
+  };
+
   return (
     <MainLayout>
       <div className="container max-w-6xl mx-auto py-8 px-4">
@@ -55,7 +71,7 @@ const Dashboard = () => {
         </p>
 
         {/* Quick Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
           <Button 
             onClick={() => navigate('/gadget-repair')}
             className="flex items-center gap-2 h-auto py-6"
@@ -70,6 +86,14 @@ const Dashboard = () => {
           >
             <BookOpen className="h-5 w-5" />
             <span>{isExpert ? 'View Academic Questions' : 'Ask Academic Question'}</span>
+          </Button>
+          <Button 
+            onClick={() => navigate('/assignment-writing')}
+            className="flex items-center gap-2 h-auto py-6"
+            variant="default"
+          >
+            <FileText className="h-5 w-5" />
+            <span>{isExpert ? 'View Assignment Requests' : 'Assignment Writing'}</span>
           </Button>
           <Button 
             onClick={() => navigate('/chat')}
@@ -111,11 +135,7 @@ const Dashboard = () => {
                   {pendingRequests.map(request => (
                     <li key={request.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
                       <div className="flex items-center gap-3">
-                        {request.type === 'repair' ? (
-                          <Laptop className="h-5 w-5 text-primary" />
-                        ) : (
-                          <BookOpen className="h-5 w-5 text-accent" />
-                        )}
+                        {renderTypeIcon(request.type)}
                         <div>
                           <p className="font-medium">{request.title}</p>
                           <p className="text-xs text-muted-foreground">Submitted on {request.date}</p>
@@ -153,11 +173,7 @@ const Dashboard = () => {
                   {completedRequests.map(request => (
                     <li key={request.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
                       <div className="flex items-center gap-3">
-                        {request.type === 'repair' ? (
-                          <Laptop className="h-5 w-5 text-primary" />
-                        ) : (
-                          <BookOpen className="h-5 w-5 text-accent" />
-                        )}
+                        {renderTypeIcon(request.type)}
                         <div>
                           <p className="font-medium">{request.title}</p>
                           <p className="text-xs text-muted-foreground">Completed on {request.date}</p>
@@ -191,11 +207,7 @@ const Dashboard = () => {
                 {earningsData.map(earning => (
                   <li key={earning.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
                     <div className="flex items-center gap-3">
-                      {earning.type === 'repair' ? (
-                        <Laptop className="h-5 w-5 text-primary" />
-                      ) : (
-                        <BookOpen className="h-5 w-5 text-accent" />
-                      )}
+                      {renderTypeIcon(earning.type)}
                       <div>
                         <p className="font-medium">{earning.title}</p>
                         <p className="text-xs text-muted-foreground">Completed on {earning.date}</p>

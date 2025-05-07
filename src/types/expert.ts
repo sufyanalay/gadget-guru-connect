@@ -26,4 +26,7 @@ export interface Expert {
   languages: string[];
   education?: string;
   availability?: string;
+  assignmentCompletionRate?: number; // percentage of successfully completed assignments
+  assignmentCount?: number; // total number of assignments completed
+  featuredAssignments?: string[]; // list of notable assignment topics completed
 }

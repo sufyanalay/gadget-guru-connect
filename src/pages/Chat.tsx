@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { UserPlus, Check } from 'lucide-react';
+import { UserRole } from '@/contexts/AuthContext';
 
 // Mock data with Muslim Pakistani names
 const mockContacts: Contact[] = [
@@ -55,31 +56,31 @@ const mockUsers = [
   {
     id: 'user1',
     name: 'Ayesha Malik',
-    role: 'student',
+    role: 'student' as UserRole,
     avatar: null,
   },
   {
     id: 'user2',
     name: 'Omar Farooq',
-    role: 'teacher',
+    role: 'teacher' as UserRole,
     avatar: null,
   },
   {
     id: 'user3',
     name: 'Sana Javed',
-    role: 'student',
+    role: 'student' as UserRole,
     avatar: null,
   },
   {
     id: 'user4',
     name: 'Tariq Jameel',
-    role: 'technician',
+    role: 'technician' as UserRole,
     avatar: null,
   },
   {
     id: 'user5',
     name: 'Rabia Khan',
-    role: 'teacher',
+    role: 'teacher' as UserRole,
     avatar: null,
   },
 ];

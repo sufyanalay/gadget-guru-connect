@@ -8,6 +8,11 @@ import ChatInterface from '@/components/chat/ChatInterface';
 import { chatService } from '@/services/chatService';
 import { toast } from '@/components/ui/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserPlus, Check } from 'lucide-react';
 
 // Mock data with Muslim Pakistani names
 const mockContacts: Contact[] = [
@@ -45,11 +50,47 @@ const mockContacts: Contact[] = [
   },
 ];
 
+// Additional mock users for the new chat dialog
+const mockUsers = [
+  {
+    id: 'user1',
+    name: 'Ayesha Malik',
+    role: 'student',
+    avatar: null,
+  },
+  {
+    id: 'user2',
+    name: 'Omar Farooq',
+    role: 'teacher',
+    avatar: null,
+  },
+  {
+    id: 'user3',
+    name: 'Sana Javed',
+    role: 'student',
+    avatar: null,
+  },
+  {
+    id: 'user4',
+    name: 'Tariq Jameel',
+    role: 'technician',
+    avatar: null,
+  },
+  {
+    id: 'user5',
+    name: 'Rabia Khan',
+    role: 'teacher',
+    avatar: null,
+  },
+];
+
 const Chat = () => {
   const { isAuthenticated, user } = useAuth();
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [contacts, setContacts] = useState<Contact[]>(mockContacts);
   const [isLoading, setIsLoading] = useState(false);
+  const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
   // In a real implementation, this would fetch contacts from the API
   useEffect(() => {
@@ -111,6 +152,53 @@ const Chat = () => {
     }
   };
 
+  const handleStartNewChat = () => {
+    setNewChatDialogOpen(true);
+  };
+
+  const handleCreateChat = async () => {
+    if (!selectedUser) return;
+
+    setIsLoading(true);
+    try {
+      // In a real app, this would be an API call
+      // await chatService.createChatSession(selectedUser);
+      
+      // For now, simulate API call and add to contacts
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const newContact = mockUsers.find(u => u.id === selectedUser);
+      if (newContact) {
+        const contact: Contact = {
+          id: newContact.id,
+          name: newContact.name,
+          role: newContact.role,
+          lastMessage: '',
+          avatar: newContact.avatar,
+        };
+        
+        setContacts(prev => [contact, ...prev]);
+        setSelectedContact(contact);
+        
+        toast({
+          title: 'New chat created',
+          description: `You can now chat with ${newContact.name}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+      toast({
+        title: 'Error',
+        description: 'Could not create new chat. Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+      setNewChatDialogOpen(false);
+      setSelectedUser(null);
+    }
+  };
+
   return (
     <MainLayout>
       <div className="container max-w-6xl mx-auto py-8 px-4">
@@ -121,6 +209,17 @@ const Chat = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
+            <div className="mb-4 flex justify-between items-center">
+              <h2 className="text-lg font-medium">Contacts</h2>
+              <Button 
+                onClick={handleStartNewChat} 
+                size="sm" 
+                className="flex items-center gap-1"
+              >
+                <UserPlus className="h-4 w-4" />
+                New Chat
+              </Button>
+            </div>
             <ChatContactsList 
               contacts={contacts}
               onSelectContact={handleSelectContact}
@@ -149,6 +248,67 @@ const Chat = () => {
           </div>
         </div>
       </div>
+
+      {/* New Chat Dialog */}
+      <Dialog open={newChatDialogOpen} onOpenChange={setNewChatDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>New Chat</DialogTitle>
+            <DialogDescription>
+              Select a person you want to start chatting with
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Command className="rounded-lg border shadow-md">
+              <CommandInput placeholder="Search for people..." />
+              <CommandEmpty>No person found.</CommandEmpty>
+              <CommandGroup>
+                <ScrollArea className="h-72">
+                  {mockUsers.map((user) => (
+                    <CommandItem
+                      key={user.id}
+                      value={user.name}
+                      onSelect={() => setSelectedUser(user.id)}
+                      className="flex items-center gap-2 p-2"
+                    >
+                      <div className={`flex items-center gap-2 flex-1 ${selectedUser === user.id ? 'font-medium' : ''}`}>
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={user.avatar || undefined} />
+                          <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span>{user.name}</span>
+                          <span className="text-xs text-muted-foreground capitalize">{user.role}</span>
+                        </div>
+                      </div>
+                      {selectedUser === user.id && (
+                        <Check className="h-4 w-4 text-primary" />
+                      )}
+                    </CommandItem>
+                  ))}
+                </ScrollArea>
+              </CommandGroup>
+            </Command>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setNewChatDialogOpen(false);
+                setSelectedUser(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCreateChat} 
+              disabled={!selectedUser || isLoading}
+            >
+              {isLoading ? "Creating..." : "Start Chat"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 };

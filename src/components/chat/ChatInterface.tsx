@@ -10,6 +10,8 @@ import { Message, MessageStatus, Attachment } from '@/types/chat';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import MessageBubble from '@/components/chat/MessageBubble';
 import TypingIndicator from '@/components/chat/TypingIndicator';
+import CallButton from '@/components/chat/CallButton';
+import CallInterface from '@/components/chat/CallInterface';
 
 interface ChatInterfaceProps {
   recipientId: string;
@@ -33,6 +35,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Calling states
+  const [isCallActive, setIsCallActive] = useState(false);
+  const [callType, setCallType] = useState<'audio' | 'video'>('audio');
+  const [callStatus, setCallStatus] = useState<'connecting' | 'ringing' | 'ongoing' | 'ended'>('connecting');
 
   // Mock initial messages - in real implementation, fetch messages from API
   useEffect(() => {
@@ -267,6 +274,39 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Call functions
+  const handleInitiateCall = (type: 'audio' | 'video') => {
+    setCallType(type);
+    setIsCallActive(true);
+    setCallStatus('connecting');
+    
+    // Simulate the call being connected after a delay
+    setTimeout(() => {
+      setCallStatus('ringing');
+      
+      // Simulate call being answered after a delay
+      setTimeout(() => {
+        setCallStatus('ongoing');
+        
+        toast({
+          title: `${type.charAt(0).toUpperCase() + type.slice(1)} call started`,
+          description: `You are in a ${type} call with ${recipientName}`,
+        });
+        
+      }, 3000);
+    }, 1000);
+  };
+  
+  const handleEndCall = () => {
+    setIsCallActive(false);
+    setCallStatus('ended');
+    
+    toast({
+      title: "Call ended",
+      description: `Call with ${recipientName} has ended`,
+    });
+  };
+
   return (
     <div className="flex flex-col h-[70vh] bg-card rounded-md border overflow-hidden">
       {/* Chat header */}
@@ -281,8 +321,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <p className="text-xs text-muted-foreground capitalize">{recipientRole}</p>
           </div>
         </div>
-        <div className="text-xs text-muted-foreground">
-          {isRecipientTyping ? 'typing...' : 'online'}
+        <div className="flex items-center gap-2">
+          <CallButton 
+            recipientId={recipientId}
+            recipientName={recipientName}
+            type="audio"
+            onCallInitiated={handleInitiateCall}
+          />
+          <CallButton 
+            recipientId={recipientId}
+            recipientName={recipientName}
+            type="video"
+            onCallInitiated={handleInitiateCall}
+          />
+          <div className="text-xs text-muted-foreground">
+            {isRecipientTyping ? 'typing...' : 'online'}
+          </div>
         </div>
       </div>
 
@@ -367,6 +421,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         />
       </div>
+
+      {/* Call interface */}
+      <CallInterface
+        isOpen={isCallActive}
+        callType={callType}
+        recipientId={recipientId}
+        recipientName={recipientName}
+        recipientAvatar={recipientAvatar}
+        callStatus={callStatus}
+        onClose={handleEndCall}
+      />
     </div>
   );
 };

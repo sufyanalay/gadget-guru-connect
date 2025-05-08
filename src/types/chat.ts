@@ -1,5 +1,7 @@
 
 export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+export type CallType = 'audio' | 'video';
+export type CallStatus = 'connecting' | 'ringing' | 'ongoing' | 'ended';
 
 export interface Attachment {
   id: string;
@@ -28,4 +30,15 @@ export interface ChatSession {
   unreadCount: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface Call {
+  id: string;
+  type: CallType;
+  status: CallStatus;
+  initiator: string;
+  recipient: string;
+  startTime: Date;
+  endTime?: Date;
+  duration?: number;
 }

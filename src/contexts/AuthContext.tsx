@@ -16,6 +16,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
   loading: boolean;
@@ -62,6 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name,
         email,
         role,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
       };
       
       setUser(mockUser);
@@ -82,6 +84,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Mock Google login function
+  const loginWithGoogle = async () => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Create a mock Google user
+      const mockGoogleUser: User = {
+        id: `google-user-${Date.now()}`,
+        name: 'Muhammad Ali',
+        email: 'muhammad.ali@gmail.com',
+        role: 'student',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=MuhammadAli',
+      };
+      
+      setUser(mockGoogleUser);
+      localStorage.setItem('user', JSON.stringify(mockGoogleUser));
+      toast({
+        title: "Google login successful!",
+        description: `Welcome, ${mockGoogleUser.name}!`,
+      });
+    } catch (error) {
+      toast({
+        title: "Google login failed",
+        description: "There was an error logging in with Google. Please try again.",
+        variant: "destructive",
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const register = async (name: string, email: string, password: string, role: UserRole) => {
     setLoading(true);
     try {
@@ -93,6 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name,
         email,
         role,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
       };
       
       setUser(mockUser);
@@ -128,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user, 
         isAuthenticated: !!user,
         login,
+        loginWithGoogle,
         register,
         logout,
         loading

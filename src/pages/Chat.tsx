@@ -402,6 +402,7 @@ const Chat = () => {
                         key={user.id}
                         value={user.name}
                         onSelect={() => setSelectedUser(user.id)}
+                        aria-selected={selectedUser === user.id}
                         className={`flex items-center gap-2 p-3 ${selectedUser === user.id ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''}`}
                       >
                         <div className={`flex items-center gap-3 flex-1 ${selectedUser === user.id ? 'font-medium' : ''}`}>
@@ -437,6 +438,7 @@ const Chat = () => {
                         key={expert.id}
                         value={expert.name}
                         onSelect={() => setSelectedExpert(expert.id)}
+                        aria-selected={selectedExpert === expert.id}
                         className={`flex items-center gap-2 p-3 ${selectedExpert === expert.id ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''}`}
                       >
                         <div className={`flex items-center gap-3 flex-1 ${selectedExpert === expert.id ? 'font-medium' : ''}`}>

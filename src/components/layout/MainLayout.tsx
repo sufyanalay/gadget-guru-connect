@@ -13,7 +13,9 @@ import {
   Menu, 
   X,
   Settings,
-  BarChart3
+  BarChart3,
+  Users,
+  FileText
 } from 'lucide-react';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -34,6 +36,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       { label: 'Dashboard', path: '/dashboard', icon: <BarChart3 size={18} /> },
       { label: 'Gadget Repair', path: '/gadget-repair', icon: <Laptop size={18} /> },
       { label: 'Academic Help', path: '/academic-help', icon: <BookOpen size={18} /> },
+      { label: 'Resources', path: '/resources', icon: <FileText size={18} /> },
+      { label: 'Experts', path: '/experts', icon: <Users size={18} /> },
       { label: 'Chat', path: '/chat', icon: <MessageSquare size={18} /> },
       { label: 'Profile', path: '/profile', icon: <User size={18} /> },
     );

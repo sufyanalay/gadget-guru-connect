@@ -17,6 +17,7 @@ import Experts from "./pages/Experts";
 import ExpertProfile from "./pages/ExpertProfile";
 import Profile from "./pages/Profile";
 import Earnings from "./pages/Earnings";
+import Resources from "./pages/Resources"; // Add this import
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/experts/:id" element={<ExpertProfile />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/earnings" element={<Earnings />} />
+            <Route path="/resources" element={<Resources />} /> {/* Add this route */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,10 +1,9 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Paperclip, Send, Image, FileText, X, Check, CheckCheck } from 'lucide-react';
+import { Paperclip, Send, Image, FileText, X, Check, CheckCheck, Smile } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { Message, MessageStatus, Attachment } from '@/types/chat';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -310,15 +309,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   return (
     <div className="flex flex-col h-[70vh] bg-card rounded-md border overflow-hidden">
       {/* Chat header */}
-      <div className="p-4 border-b flex items-center justify-between">
+      <div className="p-4 border-b bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-slate-700 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Avatar>
+          <Avatar className="border-2 border-emerald-200 dark:border-emerald-700">
             <AvatarImage src={recipientAvatar} />
-            <AvatarFallback>{recipientName.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200">
+              {recipientName.charAt(0)}
+            </AvatarFallback>
           </Avatar>
           <div>
             <h3 className="text-sm font-medium">{recipientName}</h3>
-            <p className="text-xs text-muted-foreground capitalize">{recipientRole}</p>
+            <div className="flex items-center">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>
+              <p className="text-xs text-muted-foreground capitalize">{recipientRole}</p>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -341,8 +345,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       </div>
 
       {/* Chat messages area */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-gray-50 to-white dark:from-slate-950 dark:to-slate-900">
+        <div className="space-y-1">
           {messages.map((message) => (
             <MessageBubble
               key={message.id}
@@ -354,7 +358,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           ))}
           {isRecipientTyping && (
             <div className="flex justify-start">
-              <div className="max-w-[80%] rounded-lg p-3 bg-muted">
+              <div className="max-w-[80%] rounded-2xl p-3 bg-gray-100 dark:bg-slate-800 shadow-sm">
                 <TypingIndicator />
               </div>
             </div>
@@ -365,18 +369,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
       {/* Attachment preview */}
       {attachment && (
-        <div className="p-2 border-t">
-          <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+        <div className="p-2 border-t bg-gray-50 dark:bg-slate-800">
+          <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-700 rounded-md shadow-sm">
             {attachment.type.startsWith('image/') ? (
-              <Image size={16} />
+              <Image size={16} className="text-blue-500" />
             ) : (
-              <FileText size={16} />
+              <FileText size={16} className="text-amber-500" />
             )}
             <span className="text-sm flex-1 truncate">{attachment.name}</span>
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6"
+              className="h-6 w-6 rounded-full hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-900"
               onClick={clearAttachment}
             >
               <X size={16} />
@@ -386,29 +390,40 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       )}
 
       {/* Chat input area */}
-      <div className="p-4 border-t">
-        <div className="flex gap-2">
+      <div className="p-4 border-t bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700">
+        <div className="flex gap-2 items-center">
           <Button
             type="button"
             variant="outline"
             size="icon"
             onClick={handleAttachmentClick}
             disabled={isSending}
+            className="bg-white hover:bg-gray-100 dark:bg-slate-700 dark:hover:bg-slate-600"
           >
             <Paperclip size={18} />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            disabled={isSending}
+            className="bg-white hover:bg-gray-100 dark:bg-slate-700 dark:hover:bg-slate-600"
+          >
+            <Smile size={18} />
           </Button>
           <Input
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1"
+            className="flex-1 bg-white dark:bg-slate-700 border-gray-200 focus-visible:ring-emerald-500"
             disabled={isSending}
           />
           <Button
             type="button"
             onClick={handleSendMessage}
             disabled={(!newMessage.trim() && !attachment) || isSending}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white"
           >
             <Send size={18} />
           </Button>

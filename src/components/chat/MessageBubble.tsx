@@ -42,7 +42,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   };
 
   return (
-    <div className={`flex gap-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex gap-2 ${isCurrentUser ? 'justify-end' : 'justify-start'} mb-3`}>
       {!isCurrentUser && (
         <Avatar className="h-8 w-8">
           <AvatarFallback>{recipientName[0]}</AvatarFallback>
@@ -50,10 +50,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       )}
       
       <div
-        className={`max-w-[80%] rounded-lg p-3 ${
+        className={`max-w-[80%] rounded-2xl p-3 shadow-sm ${
           isCurrentUser
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-muted'
+            ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white'
+            : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-800'
         }`}
       >
         {message.attachments && message.attachments.length > 0 && (
@@ -83,7 +83,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className={`text-xs ${isCurrentUser ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                <span className={`text-xs ${isCurrentUser ? 'text-white/70' : 'text-muted-foreground'}`}>
                   {formatTime(message.timestamp)}
                 </span>
               </TooltipTrigger>

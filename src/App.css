@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -31,6 +32,37 @@
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
+}
+
+/* New styles for chat interface */
+.whatsapp-gradient {
+  background: linear-gradient(180deg, #128C7E 0%, #075E54 100%);
+}
+
+.typing-bubble {
+  animation: typingBubble 1.5s infinite;
+}
+
+@keyframes typingBubble {
+  0%, 100% { opacity: 0.5; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.message-appear {
+  animation: messageAppear 0.3s ease-out forwards;
+}
+
+@keyframes messageAppear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tech-icon-bg {
+  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+}
+
+.academic-icon-bg {
+  background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
 }
 
 .card {

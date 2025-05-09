@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserPlus, Check } from 'lucide-react';
+import { UserPlus, Check, Search, MessageSquare } from 'lucide-react';
 import { UserRole } from '@/contexts/AuthContext';
 
 // Mock data with Muslim Pakistani names
@@ -203,30 +203,42 @@ const Chat = () => {
   return (
     <MainLayout>
       <div className="container max-w-6xl mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-2">Chat</h1>
-        <p className="text-muted-foreground mb-8">
-          Communicate directly with experts and other users.
-        </p>
+        <div className="flex items-center mb-6">
+          <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-2 rounded-lg mr-3">
+            <MessageSquare size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold mb-0">Chat</h1>
+            <p className="text-muted-foreground">
+              Communicate directly with experts and other users
+            </p>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <div className="mb-4 flex justify-between items-center">
-              <h2 className="text-lg font-medium">Contacts</h2>
+          <div className="lg:col-span-1 bg-white dark:bg-slate-800 rounded-lg border shadow-sm">
+            <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-slate-700 rounded-t-lg">
+              <h2 className="text-lg font-medium flex items-center gap-2">
+                <Search size={18} className="text-emerald-600 dark:text-emerald-400" />
+                Contacts
+              </h2>
               <Button 
                 onClick={handleStartNewChat} 
                 size="sm" 
-                className="flex items-center gap-1"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-1"
               >
                 <UserPlus className="h-4 w-4" />
                 New Chat
               </Button>
             </div>
-            <ChatContactsList 
-              contacts={contacts}
-              onSelectContact={handleSelectContact}
-              selectedContactId={selectedContact?.id}
-              isLoading={isLoading}
-            />
+            <div className="p-2">
+              <ChatContactsList 
+                contacts={contacts}
+                onSelectContact={handleSelectContact}
+                selectedContactId={selectedContact?.id}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
           <div className="lg:col-span-2">
             {selectedContact ? (
@@ -237,12 +249,22 @@ const Chat = () => {
                 recipientAvatar={selectedContact.avatar}
               />
             ) : (
-              <div className="flex items-center justify-center h-[70vh] bg-card rounded-md border">
-                <div className="text-center p-8">
-                  <h3 className="text-xl font-medium mb-2">Select a Contact</h3>
-                  <p className="text-muted-foreground">
-                    Choose a contact from the list to start chatting
+              <div className="flex items-center justify-center h-[70vh] bg-gradient-to-br from-gray-50 to-emerald-50 dark:from-slate-900 dark:to-slate-800 rounded-md border">
+                <div className="text-center p-8 max-w-md">
+                  <div className="mx-auto bg-emerald-100 dark:bg-emerald-900 h-20 w-20 rounded-full flex items-center justify-center mb-6">
+                    <MessageSquare size={32} className="text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <h3 className="text-xl font-medium mb-4">Select a Contact</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Choose a contact from the list to start chatting or create a new conversation
                   </p>
+                  <Button 
+                    onClick={handleStartNewChat} 
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                  >
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Start New Chat
+                  </Button>
                 </div>
               </div>
             )}
@@ -270,12 +292,14 @@ const Chat = () => {
                       key={user.id}
                       value={user.name}
                       onSelect={() => setSelectedUser(user.id)}
-                      className="flex items-center gap-2 p-2"
+                      className={`flex items-center gap-2 p-3 ${selectedUser === user.id ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''}`}
                     >
-                      <div className={`flex items-center gap-2 flex-1 ${selectedUser === user.id ? 'font-medium' : ''}`}>
-                        <Avatar className="h-8 w-8">
+                      <div className={`flex items-center gap-3 flex-1 ${selectedUser === user.id ? 'font-medium' : ''}`}>
+                        <Avatar className="h-10 w-10 border-2 border-emerald-200 dark:border-emerald-800">
                           <AvatarImage src={user.avatar || undefined} />
-                          <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                          <AvatarFallback className="bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-800 dark:to-teal-900 text-emerald-700 dark:text-emerald-300">
+                            {user.name.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                           <span>{user.name}</span>
@@ -283,7 +307,7 @@ const Chat = () => {
                         </div>
                       </div>
                       {selectedUser === user.id && (
-                        <Check className="h-4 w-4 text-primary" />
+                        <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                       )}
                     </CommandItem>
                   ))}
@@ -304,6 +328,7 @@ const Chat = () => {
             <Button 
               onClick={handleCreateChat} 
               disabled={!selectedUser || isLoading}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white"
             >
               {isLoading ? "Creating..." : "Start Chat"}
             </Button>

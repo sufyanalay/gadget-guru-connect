@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import MainLayout from '@/components/layout/MainLayout';
 import RepairRequestForm from '@/components/gadget-repair/RepairRequestForm';
-import { Laptop, Wrench, TabletMinimal } from 'lucide-react';
+import { Laptop, Wrench, Tablet } from 'lucide-react';
 
 const GadgetRepair = () => {
   const { isAuthenticated } = useAuth();
@@ -51,7 +51,7 @@ const GadgetRepair = () => {
           
           <div className="bg-card p-6 rounded-xl border border-indigo-200 shadow-md hover:shadow-lg transition-shadow">
             <div className="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4 mx-auto">
-              <TabletMinimal className="h-6 w-6 text-indigo-600" />
+              <Tablet className="h-6 w-6 text-indigo-600" />
             </div>
             <h3 className="text-xl font-medium mb-2 text-center">Quick Diagnosis</h3>
             <p className="text-muted-foreground text-center">

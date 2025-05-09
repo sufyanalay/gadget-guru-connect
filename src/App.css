@@ -65,6 +65,30 @@
   background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
 }
 
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Form container styling */
+.form-container {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Hero section gradients */
+.academic-gradient {
+  background: linear-gradient(135deg, rgba(254,243,199,0.5) 0%, rgba(253,230,138,0.5) 100%);
+}
+
+.tech-gradient {
+  background: linear-gradient(135deg, rgba(224,231,255,0.5) 0%, rgba(199,210,254,0.5) 100%);
+}
+
 .card {
   padding: 2em;
 }

@@ -2,7 +2,7 @@
 import { Resource, ResourceType, ResourceCategory } from '@/types/resource';
 
 // Base API URL - this would come from environment variables in a real app
-const API_URL = 'http://localhost:8000/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Helper function for API calls
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {

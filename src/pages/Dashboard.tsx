@@ -63,7 +63,7 @@ const Dashboard = () => {
   return (
     <MainLayout>
       <div className="container max-w-6xl mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-2">Welcome, {user?.name}!</h1>
+        <h1 className="text-3xl font-bold mb-2">Welcome, {user?.full_name}!</h1>
         <p className="text-muted-foreground mb-8">
           {isExpert 
             ? 'Here\'s an overview of your requests and earnings.' 

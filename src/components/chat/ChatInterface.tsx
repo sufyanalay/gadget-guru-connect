@@ -353,7 +353,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               message={message}
               isCurrentUser={message.sender === user?.id}
               recipientName={recipientName}
-              userName={user?.name || ''}
+              userName={user?.full_name || ''}
             />
           ))}
           {isRecipientTyping && (

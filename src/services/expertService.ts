@@ -1,32 +1,6 @@
 
 import { Expert } from '@/types/expert';
-
-// Base API URL - this would come from environment variables in a real app
-const API_URL = import.meta.env.VITE_API_URL;
-
-// Helper function for API calls (same as in chatService)
-const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-  // Get auth token from localStorage
-  const token = localStorage.getItem('authToken');
-  
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-    ...options.headers,
-  };
-  
-  const response = await fetch(`${API_URL}${url}`, {
-    ...options,
-    headers,
-  });
-  
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || `API request failed with status ${response.status}`);
-  }
-  
-  return response.json();
-};
+import { fetchWithAuth, uploadWithAuth } from '@/utils/apiClient';
 
 // Experts API services
 export const expertService = {

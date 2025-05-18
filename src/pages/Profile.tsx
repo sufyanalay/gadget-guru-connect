@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 const Profile = () => {
   const { user, isAuthenticated } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [profileName, setProfileName] = useState(user?.name || '');
+  const [profileName, setProfileName] = useState(user?.full_name || '');
   const [bio, setBio] = useState('');
   const [email, setEmail] = useState(user?.email || '');
 
@@ -69,11 +69,11 @@ const Profile = () => {
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={user?.avatar} />
                   <AvatarFallback className="text-2xl">
-                    {user?.name?.charAt(0) || 'U'}
+                    {user?.full_name?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <CardTitle>{user?.name}</CardTitle>
+              <CardTitle>{user?.full_name}</CardTitle>
               <CardDescription className="capitalize">{roleLabel()}</CardDescription>
             </CardHeader>
             <CardContent className="text-center">

@@ -1,54 +1,16 @@
 
 import { Assignment } from '@/types/assignment';
+import { fetchWithAuth, uploadWithAuth } from '@/utils/apiClient';
 
-// Base API URL - this would come from environment variables in a real app
-const API_URL = 'http://localhost:8000/api';
-
-// Helper function for API calls (same as in other services)
-const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-  // Get auth token from localStorage
-  const token = localStorage.getItem('authToken');
-  
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-    ...options.headers,
-  };
-  
-  const response = await fetch(`${API_URL}${url}`, {
-    ...options,
-    headers,
-  });
-  
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || `API request failed with status ${response.status}`);
-  }
-  
-  return response.json();
-};
+// Base API URL for direct fetch calls
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Assignment API services
 export const assignmentService = {
   // Submit assignment
   submitAssignment: async (formData: FormData): Promise<Assignment> => {
-    // We use FormData for file uploads
-    const token = localStorage.getItem('authToken');
-    
-    const response = await fetch(`${API_URL}/assignments/`, {
-      method: 'POST',
-      headers: {
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      },
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || `API request failed with status ${response.status}`);
-    }
-    
-    return response.json();
+    // Using our uploadWithAuth helper for file uploads
+    return uploadWithAuth('/assignments/', formData);
   },
   
   // Get user assignments
@@ -71,22 +33,8 @@ export const assignmentService = {
   
   // Submit assignment solution (for experts)
   submitSolution: async (id: string, formData: FormData): Promise<Assignment> => {
-    const token = localStorage.getItem('authToken');
-    
-    const response = await fetch(`${API_URL}/assignments/${id}/solution/`, {
-      method: 'POST',
-      headers: {
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      },
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || `API request failed with status ${response.status}`);
-    }
-    
-    return response.json();
+    // Using our uploadWithAuth helper for file uploads
+    return uploadWithAuth(`/assignments/${id}/solution/`, formData);
   },
 };
 
